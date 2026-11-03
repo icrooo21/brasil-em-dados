@@ -4,6 +4,15 @@ Painel acadêmico interativo que consulta dados oficiais do **Censo Demográfico
 
 O projeto foi construído como uma página HTML estática, sem framework e sem etapa de build, com **Chart.js 4.4.7 vendorizado** e uma **Skill personalizada do OpenCode** usada para orientar decisões de dados, visualização e acessibilidade.
 
+## 🔗 Acesso rápido
+
+| O quê | Link |
+|---|---|
+| **Site publicado (GitHub Pages)** | <https://icrooo21.github.io/brasil-em-dados/> |
+| **Código-fonte no GitHub** | <https://github.com/icrooo21/brasil-em-dados> |
+
+O site é público, abre direto no navegador (desktop ou celular) e consulta a API oficial do IBGE em tempo real, com cache e snapshot de contingência.
+
 ---
 
 ## 1. Objetivo
