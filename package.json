@@ -1,0 +1,12 @@
+{
+  "name": "brasil-em-dados",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Painel acadêmico de análise demográfica com dados oficiais do Censo 2022 (IBGE/SIDRA, tabela 4714).",
+  "scripts": {
+    "start": "node server.mjs",
+    "test": "node --test tests/analysis.test.mjs",
+    "test:live": "node --test tests/api.live.test.mjs"
+  }
+}

@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Painel acadêmico de análise demográfica com dados oficiais do Censo Demográfico 2022, tabela 4714 do IBGE.">
+  <meta name="theme-color" content="#0b2545">
+  <title>Brasil em Dados — Painel de Análise Demográfica</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+  <header class="site-header" id="topo">
+    <div class="shell header-shell">
+      <div class="brand">
+        <div class="brand-symbol" aria-hidden="true">
+          <svg viewBox="0 0 48 48" role="presentation">
+            <rect x="6" y="28" width="7" height="14" rx="1.5"></rect>
+            <rect x="17" y="20" width="7" height="22" rx="1.5"></rect>
+            <rect x="28" y="11" width="7" height="31" rx="1.5"></rect>
+            <path d="M6 15.5 18 8l10 3.5L42 4" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+        </div>
+        <div class="brand-copy">
+          <p class="eyebrow eyebrow-light">Painel de análise demográfica</p>
+          <h1>BRASIL EM DADOS</h1>
+          <p class="subtitle">Análise demográfica baseada em dados oficiais</p>
+        </div>
+      </div>
+
+      <div class="header-side">
+        <span class="official-badge">
+          <svg viewBox="0 0 20 20" aria-hidden="true">
+            <path d="M10 2.2 16 4.6v4.5c0 3.6-2.5 6.7-6 8.7-3.5-2-6-5.1-6-8.7V4.6L10 2.2Z" fill="none" stroke="currentColor" stroke-width="1.6"></path>
+            <path d="m7.2 9.9 1.9 1.9 3.8-4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path>
+          </svg>
+          FONTE OFICIAL: IBGE
+        </span>
+        <div class="header-actions no-print">
+          <button class="btn btn-ghost" id="refreshBtn" type="button">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M16.3 7.2A6.6 6.6 0 1 0 17 11" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"></path><path d="M16.8 3.3v4.4h-4.4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            <span id="refreshLabel">Atualizar dados</span>
+          </button>
+          <button class="btn btn-primary" id="printBtn" type="button">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5.5 7V3.5h9V7M5.5 14H3.8V8.2h12.4V14h-1.7M5.5 12h9v4.5h-9V12Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            Imprimir relatório / Salvar em PDF
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="header-meta-bar">
+      <div class="shell meta-shell">
+        <div class="meta-block">
+          <span class="meta-label">Última consulta bem-sucedida</span>
+          <strong id="lastConsulted">Carregando informações…</strong>
+        </div>
+        <div class="meta-block">
+          <span class="meta-label">Referência dos dados</span>
+          <strong>Censo Demográfico 2022 · Tabela 4714</strong>
+        </div>
+        <div class="data-status" id="dataStatus" data-mode="loading" role="status">
+          <span class="status-dot" aria-hidden="true"></span>
+          <span id="dataStatusText">Consultando a API</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="shell notices no-print" id="notices" role="status" aria-live="polite">
+    <div class="notice notice-info">
+      <span class="notice-icon" aria-hidden="true">i</span>
+      <div>
+        <strong>Consultando as APIs do IBGE</strong>
+        <p>Carregando população, área territorial e densidade demográfica da tabela 4714.</p>
+      </div>
+    </div>
+  </div>
+
+  <main class="page shell" id="conteudo">
+    <section class="section intro" id="introducao" aria-labelledby="introTitle">
+      <div class="section-heading">
+        <p class="eyebrow">Contexto</p>
+        <h2 id="introTitle">O que este painel analisa</h2>
+      </div>
+      <div class="intro-grid">
+        <div class="prose">
+          <p>
+            Este painel compara a <strong>população residente</strong> de unidades territoriais
+            brasileiras a partir de dados oficiais do IBGE. O recorte inicial reúne as
+            <strong>27 Unidades da Federação</strong>; os filtros permitem analisar regiões,
+            estados específicos ou o conjunto completo.
+          </p>
+          <p>
+            A base é a <strong>tabela 4714 do SIDRA</strong>, do Censo Demográfico 2022,
+            que também fornece área territorial e densidade demográfica. Todos os
+            indicadores do painel se referem ao <strong>mesmo ano de referência</strong>:
+            não há série histórica nem projeção.
+          </p>
+          <p>
+            Totais, participações, amplitude, mediana e índice de Gini são
+            <strong>cálculos realizados sobre os valores da API</strong>. As interpretações
+            aparecem separadas dos resultados observados e não substituem as
+            estatísticas oficiais.
+          </p>
+        </div>
+
+        <aside class="universe-card" aria-labelledby="universeTitle">
+          <div class="universe-head">
+            <h3 id="universeTitle">Universo da análise</h3>
+            <span class="universe-year">2022</span>
+          </div>
+          <dl class="universe-list">
+            <div>
+              <dt>Unidades da Federação</dt>
+              <dd id="universeStates">—</dd>
+            </div>
+            <div>
+              <dt>Grandes regiões</dt>
+              <dd id="universeRegions">—</dd>
+            </div>
+            <div>
+              <dt>Ano de referência</dt>
+              <dd id="universeYear">2022</dd>
+            </div>
+            <div>
+              <dt>População do Brasil</dt>
+              <dd id="universeBrazil">—</dd>
+            </div>
+          </dl>
+          <p class="micro">
+            População residente, área territorial e densidade demográfica.
+            Fonte: IBGE/SIDRA, tabela 4714.
+          </p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section panel filters no-print" id="filtros" aria-labelledby="filtersTitle">
+      <div class="panel-head">
+        <div>
+          <p class="eyebrow">Filtros</p>
+          <h2 id="filtersTitle">Recorte da análise</h2>
+          <p class="section-lead">Indicadores, gráficos e conclusões respondem imediatamente à seleção.</p>
+        </div>
+        <p class="filter-summary" id="filterSummary" aria-live="polite">Carregando…</p>
+      </div>
+
+      <div class="mode-switch" role="group" aria-label="Nível territorial da análise">
+        <button class="mode-btn is-active" id="modeStates" type="button" data-mode="states" aria-pressed="true">
+          Estados <span class="mode-count">27</span>
+        </button>
+        <button class="mode-btn" id="modeRegions" type="button" data-mode="regions" aria-pressed="false">
+          Regiões <span class="mode-count">5</span>
+        </button>
+      </div>
+
+      <div class="filter-body" id="stateFilters">
+        <div class="quick-row">
+          <span class="quick-label">Atalhos por região</span>
+          <div class="chip-row" id="regionQuickFilters" role="group" aria-label="Selecionar todos os estados de uma região">
+            <button class="chip is-active" type="button" data-region-quick="all" aria-pressed="true">Todas</button>
+            <button class="chip" type="button" data-region-quick="Norte" aria-pressed="false">Norte</button>
+            <button class="chip" type="button" data-region-quick="Nordeste" aria-pressed="false">Nordeste</button>
+            <button class="chip" type="button" data-region-quick="Sudeste" aria-pressed="false">Sudeste</button>
+            <button class="chip" type="button" data-region-quick="Sul" aria-pressed="false">Sul</button>
+            <button class="chip" type="button" data-region-quick="Centro-Oeste" aria-pressed="false">Centro-Oeste</button>
+          </div>
+        </div>
+
+        <fieldset class="checkbox-fieldset">
+          <legend class="sr-only">Unidades da Federação incluídas na análise</legend>
+          <div class="state-groups" id="stateGroups">
+            <p class="muted">Carregando unidades territoriais…</p>
+          </div>
+        </fieldset>
+
+        <div class="filter-actions">
+          <button class="link-btn" id="selectAllStates" type="button">Selecionar todas as UFs</button>
+          <button class="link-btn link-btn-muted" id="clearStates" type="button">Limpar seleção</button>
+        </div>
+      </div>
+
+      <div class="filter-body" id="regionFilters" hidden>
+        <fieldset class="checkbox-fieldset">
+          <legend class="sr-only">Grandes regiões incluídas na análise</legend>
+          <div class="region-options" id="regionOptions">
+            <p class="muted">Carregando regiões…</p>
+          </div>
+        </fieldset>
+        <div class="filter-actions">
+          <button class="link-btn" id="selectAllRegions" type="button">Selecionar todas as regiões</button>
+          <button class="link-btn link-btn-muted" id="clearRegions" type="button">Limpar seleção</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="indicadores" aria-labelledby="kpiTitle">
+      <div class="section-heading">
+        <p class="eyebrow">Indicadores principais</p>
+        <h2 id="kpiTitle">Números do recorte selecionado</h2>
+        <p class="section-lead">
+          Calculados a partir das unidades ativas. O total é a soma do recorte,
+          não uma estimativa oficial independente.
+        </p>
+      </div>
+
+      <div class="kpi-grid" id="kpiGrid" aria-busy="true">
+        <article class="kpi-card kpi-featured">
+          <div class="kpi-top">
+            <span class="kpi-label">População no recorte</span>
+            <span class="kpi-symbol" aria-hidden="true">Σ</span>
+          </div>
+          <p class="kpi-value" id="kpiTotal">—</p>
+          <p class="kpi-unit">pessoas</p>
+          <p class="kpi-note" id="kpiTotalNote">Soma das unidades selecionadas</p>
+        </article>
+
+        <article class="kpi-card">
+          <div class="kpi-top">
+            <span class="kpi-label">Unidade mais populosa</span>
+            <span class="kpi-symbol kpi-symbol-up" aria-hidden="true">↑</span>
+          </div>
+          <p class="kpi-value kpi-name" id="kpiMost">—</p>
+          <p class="kpi-note" id="kpiMostNote">Aguardando dados</p>
+        </article>
+
+        <article class="kpi-card">
+          <div class="kpi-top">
+            <span class="kpi-label">Unidade menos populosa</span>
+            <span class="kpi-symbol kpi-symbol-down" aria-hidden="true">↓</span>
+          </div>
+          <p class="kpi-value kpi-name" id="kpiLeast">—</p>
+          <p class="kpi-note" id="kpiLeastNote">Aguardando dados</p>
+        </article>
+
+        <article class="kpi-card">
+          <div class="kpi-top">
+            <span class="kpi-label">Unidades comparadas</span>
+            <span class="kpi-symbol" aria-hidden="true">#</span>
+          </div>
+          <p class="kpi-value" id="kpiCount">—</p>
+          <p class="kpi-unit" id="kpiCountUnit">unidades</p>
+          <p class="kpi-note" id="kpiCountNote">Seleção ativa</p>
+        </article>
+      </div>
+
+      <div class="insight-strip" id="insightStrip" hidden>
+        <div class="insight-item">
+          <span>Amplitude</span>
+          <strong id="insightRange">—</strong>
+          <small>maior − menor</small>
+        </div>
+        <div class="insight-item">
+          <span>Razão entre extremos</span>
+          <strong id="insightRatio">—</strong>
+          <small>maior ÷ menor</small>
+        </div>
+        <div class="insight-item">
+          <span>Concentração no topo</span>
+          <strong id="insightTop3">—</strong>
+          <small>3 maiores ÷ recorte</small>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="graficos" aria-labelledby="chartsTitle">
+      <div class="section-heading">
+        <p class="eyebrow">Visualizações</p>
+        <h2 id="chartsTitle">Quatro leituras dos mesmos dados oficiais</h2>
+        <p class="section-lead">
+          Cada gráfico responde a uma pergunta diferente. As tabelas abaixo de cada
+          visualização são a alternativa acessível e a versão impressa dos dados.
+        </p>
+      </div>
+
+      <div class="charts-grid" id="chartsGrid">
+        <article class="chart-card chart-wide" id="populationCard">
+          <header class="chart-head">
+            <p class="eyebrow">Volume absoluto</p>
+            <h3>População por unidade territorial</h3>
+            <p>Quais unidades concentram o maior número absoluto de residentes?</p>
+          </header>
+          <div class="chart-body" id="populationChartWrap">
+            <canvas id="populationChart" role="img" aria-label="Gráfico de barras da população residente por unidade territorial."></canvas>
+            <p class="chart-empty" id="populationEmpty" hidden></p>
+          </div>
+          <footer class="chart-foot">
+            <span>IBGE/SIDRA · Tabela 4714 · 2022</span>
+            <span id="populationNote">Ordenado da maior para a menor população.</span>
+          </footer>
+          <details class="table-details">
+            <summary>Ver tabela de dados <span id="populationTableCount">0 linhas</span></summary>
+            <div class="table-scroll">
+              <table>
+                <caption class="sr-only">População residente e participação percentual por unidade territorial</caption>
+                <thead>
+                  <tr><th scope="col">#</th><th scope="col">Unidade</th><th scope="col" class="region-col">Região</th><th scope="col">População (pessoas)</th><th scope="col">Participação</th></tr>
+                </thead>
+                <tbody id="populationTableBody"></tbody>
+              </table>
+            </div>
+          </details>
+        </article>
+
+        <article class="chart-card chart-narrow" id="shareCard">
+          <header class="chart-head">
+            <p class="eyebrow">Composição</p>
+            <h3>Distribuição percentual</h3>
+            <p>Como a população se distribui entre as unidades do recorte?</p>
+          </header>
+          <div class="chart-body chart-body-fixed" id="shareChartWrap">
+            <canvas id="shareChart" role="img" aria-label="Gráfico de rosca com a distribuição percentual da população entre as unidades."></canvas>
+            <p class="chart-empty" id="shareEmpty" hidden></p>
+          </div>
+          <footer class="chart-foot">
+            <span>Participação sobre o total selecionado</span>
+            <span id="shareNote">—</span>
+          </footer>
+          <details class="table-details">
+            <summary>Ver tabela de dados <span id="shareTableCount">0 linhas</span></summary>
+            <div class="table-scroll">
+              <table>
+                <caption class="sr-only">Distribuição percentual da população por unidade territorial</caption>
+                <thead>
+                  <tr><th scope="col">Unidade</th><th scope="col">População (pessoas)</th><th scope="col">Participação</th></tr>
+                </thead>
+                <tbody id="shareTableBody"></tbody>
+              </table>
+            </div>
+          </details>
+        </article>
+
+        <article class="chart-card chart-half" id="densityCard">
+          <header class="chart-head">
+            <p class="eyebrow">Território</p>
+            <h3>Densidade demográfica</h3>
+            <p>Quais unidades concentram mais habitantes por quilômetro quadrado?</p>
+          </header>
+          <div class="chart-body" id="densityChartWrap">
+            <canvas id="densityChart" role="img" aria-label="Gráfico de barras da densidade demográfica em escala logarítmica."></canvas>
+            <p class="chart-empty" id="densityEmpty" hidden></p>
+          </div>
+          <footer class="chart-foot">
+            <span>Densidade oficial = população ÷ área</span>
+            <span id="densityNote">Escala logarítmica para comparar ordens de grandeza.</span>
+          </footer>
+          <details class="table-details">
+            <summary>Ver tabela de dados <span id="densityTableCount">0 linhas</span></summary>
+            <div class="table-scroll">
+              <table>
+                <caption class="sr-only">Densidade demográfica e área territorial por unidade</caption>
+                <thead>
+                  <tr><th scope="col">#</th><th scope="col">Unidade</th><th scope="col">Densidade (hab/km²)</th><th scope="col">Área (km²)</th></tr>
+                </thead>
+                <tbody id="densityTableBody"></tbody>
+              </table>
+            </div>
+          </details>
+        </article>
+
+        <article class="chart-card chart-half" id="lorenzCard">
+          <header class="chart-head">
+            <p class="eyebrow">Concentração</p>
+            <h3>Curva de Lorenz da população</h3>
+            <p>Quanto da população se acumula ao ordenar as unidades da menor para a maior?</p>
+          </header>
+          <div class="chart-body chart-body-fixed" id="lorenzChartWrap">
+            <canvas id="lorenzChart" role="img" aria-label="Curva de Lorenz da concentração populacional entre as unidades."></canvas>
+            <p class="chart-empty" id="lorenzEmpty" hidden></p>
+          </div>
+          <footer class="chart-foot">
+            <span>0 = totais iguais · 1 = toda a população em uma unidade</span>
+            <span id="lorenzNote">Gini: —</span>
+          </footer>
+          <details class="table-details">
+            <summary>Ver tabela de dados <span id="lorenzTableCount">0 linhas</span></summary>
+            <div class="table-scroll">
+              <table>
+                <caption class="sr-only">Pontos da curva de Lorenz por unidade, em ordem crescente de população</caption>
+                <thead>
+                  <tr><th scope="col">Unidade (ordem crescente)</th><th scope="col">% acumulado de unidades</th><th scope="col">% acumulado da população</th></tr>
+                </thead>
+                <tbody id="lorenzTableBody"></tbody>
+              </table>
+            </div>
+          </details>
+        </article>
+      </div>
+
+      <div class="charts-empty-panel" id="chartsEmpty" hidden>
+        <span class="empty-mark" aria-hidden="true">∅</span>
+        <h3>Sem dados para visualizar</h3>
+        <p id="chartsEmptyText">Selecione pelo menos uma unidade territorial nos filtros para gerar os gráficos.</p>
+      </div>
+    </section>
+
+    <section class="section analysis-section" id="analise" aria-labelledby="analysisTitle">
+      <div class="section-heading section-heading-light">
+        <p class="eyebrow eyebrow-light">Análise dos resultados</p>
+        <h2 id="analysisTitle">O que os dados do recorte mostram</h2>
+        <p class="section-lead">Observações e interpretações calculadas sobre a seleção ativa.</p>
+      </div>
+
+      <div class="analysis-layout">
+        <article class="analysis-lead">
+          <span class="tag">Leitura do recorte</span>
+          <h3 id="analysisHeadline" aria-live="polite">Consultando dados…</h3>
+          <p id="analysisSubhead">A análise será gerada após a consulta à API.</p>
+          <p class="analysis-disclaimer">
+            <strong>Fatos e interpretação:</strong> valores, totais e percentuais derivam
+            da tabela 4714. As frases desta seção são leituras analíticas produzidas
+            pelo painel, não conclusões do IBGE.
+          </p>
+        </article>
+
+        <article class="analysis-card">
+          <h3>Principais observações</h3>
+          <ul id="observations"><li>Consultando dados…</li></ul>
+        </article>
+
+        <article class="analysis-card">
+          <h3>Comparações e diferenças</h3>
+          <ul id="comparisons"><li>Consultando dados…</li></ul>
+        </article>
+
+        <article class="analysis-card analysis-limits">
+          <h3>Limitações da análise</h3>
+          <ul id="limitations"><li>Consultando dados…</li></ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="metodologia" aria-labelledby="methodTitle">
+      <div class="section-heading">
+        <p class="eyebrow">Metodologia</p>
+        <h2 id="methodTitle">Como os dados foram obtidos e tratados</h2>
+        <p class="section-lead">
+          Transparência sobre fonte, validação, cálculos e limites — do JSON bruto
+          da API até os indicadores exibidos.
+        </p>
+      </div>
+
+      <div class="method-steps">
+        <article class="method-step">
+          <span class="step-number">01</span>
+          <h3>Consulta oficial</h3>
+          <p>
+            Requisições reais à API de Agregados v3 do IBGE (servicodados) para os
+            níveis Brasil (n1), Grandes Regiões (n2) e Unidades da Federação (n3),
+            sempre com o período 2022. A API SIDRA <code>/values</code> é tentada
+            como alternativa se a v3 não responder.
+          </p>
+        </article>
+        <article class="method-step">
+          <span class="step-number">02</span>
+          <h3>Validação</h3>
+          <p>
+            Conferência das variáveis 93, 6318 e 614, do período 2022 e do nível
+            territorial; rejeição de valores ausentes; teste de 27 UFs e 5 regiões;
+            coerência densidade = população ÷ área; soma das UFs e das regiões
+            comparada ao total do Brasil.
+          </p>
+        </article>
+        <article class="method-step">
+          <span class="step-number">03</span>
+          <h3>Tratamento</h3>
+          <p>
+            Conversão numérica estrita; descarte de <code>"-"</code>,
+            <code>"..."</code> e <code>"X"</code>; associação de cada UF à sua
+            grande região; ordenação e agregação apenas das unidades selecionadas.
+          </p>
+        </article>
+        <article class="method-step">
+          <span class="step-number">04</span>
+          <h3>Cálculos e leitura</h3>
+          <p>
+            Participação, amplitude, razão, média, mediana, densidade, curva de
+            Lorenz e Gini. As conclusões são recalculadas a cada mudança de filtro
+            e limitadas ao ano de referência.
+          </p>
+        </article>
+      </div>
+
+      <div class="method-detail-grid">
+        <div class="method-table-wrap">
+          <h3>Ficha técnica da consulta</h3>
+          <table class="meta-table">
+            <tbody>
+              <tr><th scope="row">API</th><td>API de Agregados v3 do IBGE (principal); API SIDRA <code>/values</code> (alternativa)</td></tr>
+              <tr><th scope="row">Tabela</th><td>4714 — População residente, área territorial e densidade demográfica</td></tr>
+              <tr><th scope="row">Pesquisa</th><td>Censo Demográfico</td></tr>
+              <tr><th scope="row">Variáveis</th><td>93 (população residente); 6318 (área territorial); 614 (densidade demográfica)</td></tr>
+              <tr><th scope="row">Período</th><td>2022 (ano de referência)</td></tr>
+              <tr><th scope="row">Níveis</th><td>Brasil (n1), Grandes Regiões (n2) e UFs (n3)</td></tr>
+              <tr><th scope="row">Consulta</th><td id="methodologyConsultedAt">—</td></tr>
+              <tr><th scope="row">Modo dos dados</th><td id="methodologyMode">—</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="formula-card">
+          <h3>Fórmulas usadas</h3>
+          <dl class="formula-list">
+            <div><dt>Participação</dt><dd><code>100 × população da unidade ÷ soma do recorte</code></dd></div>
+            <div><dt>Amplitude</dt><dd><code>maior população − menor população</code></dd></div>
+            <div><dt>Razão</dt><dd><code>maior população ÷ menor população</code></dd></div>
+            <div><dt>Densidade</dt><dd><code>população ÷ área territorial</code> (variável oficial 614)</dd></div>
+            <div><dt>Gini</dt><dd><code>1 − 2 × área sob a curva de Lorenz</code></dd></div>
+          </dl>
+          <p class="micro">
+            O Gini é calculado entre os totais populacionais das unidades,
+            não entre indivíduos. Não há correlação, causalidade ou previsão.
+          </p>
+        </div>
+      </div>
+
+      <div class="method-limitations">
+        <h3>Limitações conhecidas</h3>
+        <ul>
+          <li>Ano único (2022): o painel não avalia crescimento, migração ou tendência temporal.</li>
+          <li>População residente não é o mesmo que população presente, eleitorado ou estimativa anual.</li>
+          <li>A soma do recorte não representa o Brasil quando a seleção não cobre todas as unidades.</li>
+          <li>Percentuais podem variar 0,1 ponto por arredondamento na apresentação.</li>
+          <li>Comparações com outras edições exigem compatibilização territorial e metodológica.</li>
+          <li>A disponibilidade depende da API; cache e snapshot são sinalizados na interface.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section" id="fontes" aria-labelledby="sourcesTitle">
+      <div class="section-heading">
+        <p class="eyebrow">Fontes</p>
+        <h2 id="sourcesTitle">Referências verificáveis</h2>
+      </div>
+
+      <div class="sources-grid">
+        <article class="source-card">
+          <h3>Links oficiais</h3>
+          <ul class="source-links">
+            <li>
+              <a href="https://servicodados.ibge.gov.br/api/docs/agregados?versao=3" target="_blank" rel="noopener noreferrer">API de Agregados v3 — IBGE</a>
+              <span>Endpoint principal <code>/api/v3/agregados</code>, usado na consulta ao vivo.</span>
+            </li>
+            <li>
+              <a href="https://apisidra.ibge.gov.br/" target="_blank" rel="noopener noreferrer">API SIDRA (/values) — IBGE</a>
+              <span>Endpoint alternativo consultado se a API v3 não responder.</span>
+            </li>
+            <li>
+              <a href="https://sidra.ibge.gov.br/tabela/4714" target="_blank" rel="noopener noreferrer">Tabela 4714 — SIDRA</a>
+              <span>População residente, área territorial e densidade demográfica.</span>
+            </li>
+            <li>
+              <a href="https://www.ibge.gov.br/" target="_blank" rel="noopener noreferrer">Instituto Brasileiro de Geografia e Estatística (IBGE)</a>
+              <span>Portal oficial e acesso a pesquisas.</span>
+            </li>
+            <li>
+              <a href="https://censo2022.ibge.gov.br/" target="_blank" rel="noopener noreferrer">Censo Demográfico 2022</a>
+              <span>Resultados e documentação da operação censitária.</span>
+            </li>
+          </ul>
+        </article>
+
+        <article class="source-card source-card-accent">
+          <h3>Referência da consulta</h3>
+          <p class="citation">
+            IBGE. <strong>Censo Demográfico 2022</strong>: população residente,
+            área territorial e densidade demográfica. Tabela 4714. SIDRA.
+            Consulta realizada em <span id="sourceConsultedAt">—</span>.
+          </p>
+          <p class="source-meta">
+            <strong>Modo:</strong> <span id="sourceMode">—</span><br>
+            <strong>URL consultada:</strong>
+          </p>
+          <code class="query-url" id="sourceQueryUrl">—</code>
+          <p class="micro">
+            Se a API estiver indisponível, a interface informa se está usando
+            cache local ou snapshot incorporado e exibe a data da consulta original.
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <div class="report-actions no-print">
+      <div>
+        <h3>Relatório pronto para entrega</h3>
+        <p>O botão abre a impressão do navegador. Escolha “Salvar como PDF” para gerar o arquivo.</p>
+      </div>
+      <button class="btn btn-primary" id="printBtnBottom" type="button">Imprimir relatório / Salvar em PDF</button>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell footer-grid">
+      <div>
+        <p class="footer-brand">BRASIL EM DADOS</p>
+        <p class="footer-note">Painel acadêmico de análise demográfica com dados oficiais do IBGE.</p>
+      </div>
+      <div>
+        <p class="footer-note">HTML5 · CSS3 · JavaScript · Chart.js</p>
+        <p class="footer-note">Skill personalizada: <code>dashboard-analitico</code></p>
+      </div>
+      <div>
+        <p class="footer-note">Dados: IBGE/SIDRA · Tabela 4714 · 2022</p>
+        <p class="footer-note">Consulta: <span id="footerConsultedAt">—</span></p>
+        <p class="footer-note"><a href="#topo">Voltar ao topo ↑</a></p>
+      </div>
+    </div>
+    <div class="shell footer-bottom">
+      <p id="printFooter">Projeto acadêmico. Resultados observados pertencem ao IBGE; cálculos e interpretações são deste painel.</p>
+    </div>
+  </footer>
+
+  <noscript>
+    <div class="noscript">Este painel usa JavaScript para consultar a API do IBGE e desenhar os gráficos. Ative o JavaScript para visualizar os dados.</div>
+  </noscript>
+
+  <script src="vendor/chart.umd.min.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
